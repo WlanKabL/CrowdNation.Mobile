@@ -63,10 +63,27 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _loadAvailableNetworks() async {
     if (await Permission.location.request().isGranted) {
       List<WifiNetwork> networks = await WiFiForIoTPlugin.loadWifiList();
+
+      if (networks != null) {
+        networks.sort((a, b) =>
+            (a.level ?? 0).compareTo(b.level ?? 0)); // Sortiere nach Signalstärke
+      }
+
       setState(() {
         availableNetworks = networks;
       });
     }
+  }
+
+  String _getFrequencyBand(int? frequency) {
+    if (frequency != null) {
+      if (frequency >= 2400 && frequency <= 2500) {
+        return '2.4 GHz';
+      } else if (frequency >= 4900 && frequency <= 5900) {
+        return '5 GHz';
+      }
+    }
+    return 'Unbekannt';
   }
 
   @override
@@ -75,6 +92,15 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {
+              _getWifiDetails();
+              _loadAvailableNetworks();
+            },
+          ),
+        ],
       ),
       body: ListView(
         children: [
@@ -86,9 +112,17 @@ class _MyHomePageState extends State<MyHomePage> {
             }).toList(),
           if (availableNetworks != null)
             ...availableNetworks!.map((network) {
+              final frequencyBand = _getFrequencyBand(network.frequency);
+
               return ListTile(
                 title: Text("SSID: ${network.ssid}"),
-                subtitle: Text('Signalstärke (RSSI): ${network.level} dBm'),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Signalstärke (RSSI): ${network.level} dBm'),
+                    Text('Frequenzband: $frequencyBand'),
+                  ],
+                ),
               );
             }).toList(),
         ],
