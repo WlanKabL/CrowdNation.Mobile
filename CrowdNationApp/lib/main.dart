@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wifi_iot/wifi_iot.dart';
+import 'second_page.dart'; // Importiere die SecondPage
 
 void main() {
   runApp(MyApp());
@@ -98,6 +99,15 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               _getWifiDetails();
               _loadAvailableNetworks();
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.navigate_next), // Hinzugefügter Button
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SecondPage()), // Navigiere zur SecondPage
+              );
             },
           ),
         ],
