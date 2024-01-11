@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:wifi_iot/wifi_iot.dart';
+import 'package:wifi_scan/wifi_scan.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 
 class SecondPage extends StatefulWidget {
   @override
@@ -10,7 +10,7 @@ class SecondPage extends StatefulWidget {
 
 class _SecondPageState extends State<SecondPage> {
   Map<String, dynamic>? wifiDetails;
-  List<WifiNetwork>? availableNetworks;
+  List<WiFiAccessPoint>? availableNetworks;
 
   @override
   void initState() {
@@ -22,9 +22,10 @@ class _SecondPageState extends State<SecondPage> {
   Future<void> _getWifiDetails() async {
     PermissionStatus statusLocation = await Permission.location.request();
     if (statusLocation.isGranted) {
-      String? wifiName = await WifiInfo().getWifiName();
-      String? wifiBSSID = await WifiInfo().getWifiBSSID();
-      String? wifiIP = await WifiInfo().getWifiIP();
+      NetworkInfo networkInfo = NetworkInfo();
+      String? wifiName = await networkInfo.getWifiName();
+      String? wifiBSSID = await networkInfo.getWifiBSSID();
+      String? wifiIP = await networkInfo.getWifiIP();
 
       setState(() {
         wifiDetails = {
@@ -40,7 +41,7 @@ class _SecondPageState extends State<SecondPage> {
 
   Future<void> _loadAvailableNetworks() async {
     if (await Permission.location.request().isGranted) {
-      List<WifiNetwork> networks = await WiFiForIoTPlugin.loadWifiList();
+      List<WiFiAccessPoint> networks = await WiFiScan.instance.getScannedResults();
 
       if (networks != null) {
         networks.sort((a, b) =>
