@@ -205,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       if (ssidController.text.isNotEmpty) {
         _networks = _networks
-            .where((network) => network.ssid!.toLowerCase().contains(ssidController.text))
+            .where((network) => network.ssid!.toLowerCase().contains(ssidController.text.toLowerCase()))
             .toList();
       } else {
         // Hier rufst du _loadAvailableNetworks() auf, wenn das Textfeld leer ist
